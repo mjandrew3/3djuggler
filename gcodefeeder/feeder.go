@@ -269,7 +269,6 @@ func (f *Feeder) Pause() {
 	f.Lock()
 	defer f.Unlock()
 	log.Debug("Feeder: Pause is called")
-	// Feed, read and write function will terminate when context is cancelled
 	instructions := []string{
 		//  enable relative movements
 		"G91\n",
