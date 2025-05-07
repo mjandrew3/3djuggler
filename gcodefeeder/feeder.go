@@ -266,6 +266,31 @@ func (f *Feeder) Feed() error {
 }
 
 func (f *Feeder) Pause() {
+	f.Lock()
+	defer f.Unlock()
+	log.Debug("Feeder: Pause is called")
+	// Feed, read and write function will terminate when context is cancelled
+	instructions := []string{
+		//  enable relative movements
+		"G91\n",
+		// move Z axis up 5
+		"G1 Z5\n",
+		// enable absolute movements
+		"G90\n",
+		//  move the extruder to the side and bed to the front
+		"G1 X5 Y205 F3000\n",
+		
+	}
+	for _, instruction := range instructions {
+		_, err := f.writer.Write([]byte(instruction))
+		if err != nil {
+			log.Errorf("Feeder: Error writing pause instructions: %v", err)
+		}
+	}
+	if err := f.writer.Flush(); err != nil {
+		log.Errorf("Feeder: Error flushing pause instructions: %v", err)
+	}
+
 	f.status = ManuallyPaused
 }
 
